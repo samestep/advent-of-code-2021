@@ -1,4 +1,4 @@
-import { countIncreases, getInput } from "../code.ts";
+import { countIncreases, getInput } from "./shared.ts";
 
 const measurements = getInput(Deno.args[0]);
 
