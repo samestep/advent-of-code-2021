@@ -8,7 +8,5 @@ jobs:
       - uses: denoland/setup-deno@v1
         with:
           deno-version: "1.16.3"
-      - run: |
-          deno run --allow-read code.ts example.txt
-          deno run --allow-read code.ts input.txt
-        working-directory: day01/puzzle1
+      - working-directory: day01
+        run: ./test.sh
