@@ -10,3 +10,5 @@ jobs:
           deno-version: "1.16.3"
       - working-directory: day01
         run: ./test.sh
+      - working-directory: day02
+        run: ./test.sh
