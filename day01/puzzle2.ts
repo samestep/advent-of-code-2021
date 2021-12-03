@@ -1,6 +1,6 @@
 import { countIncreases, getInput } from "./shared.ts";
 
-const measurements = getInput(Deno.args[0]);
+const measurements = getInput();
 
 const windowSize = 3;
 const windows: number[] = [];

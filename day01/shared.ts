@@ -1,8 +1,7 @@
-export const getInput = (filename: string): number[] =>
-  Deno.readTextFileSync(filename)
-    .split(/\n/)
-    .map((line) => parseInt(line))
-    .filter((measurement) => !isNaN(measurement));
+import { getLines } from "../shared.ts";
+
+export const getInput = (): number[] =>
+  getLines().map((line) => parseInt(line));
 
 export const countIncreases = (array: number[]): number => {
   let increased = 0;

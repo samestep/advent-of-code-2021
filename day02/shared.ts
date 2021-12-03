@@ -1,9 +1,9 @@
+import { getLines } from "../shared.ts";
+
 export type Command = "forward" | "down" | "up";
 
-export const getInput = (filename: string): [Command, number][] => {
-  const lines = Deno.readTextFileSync(filename).split("\n");
-  lines.pop(); // trailing newline
-
+export const getInput = (): [Command, number][] => {
+  const lines = getLines();
   return lines.map((line) => {
     const [cmd, amtUnparsed] = line.split(" ");
     const amt = parseInt(amtUnparsed);

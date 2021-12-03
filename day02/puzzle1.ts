@@ -1,6 +1,6 @@
 import { getInput } from "./shared.ts";
 
-const input = getInput(Deno.args[0]);
+const input = getInput();
 
 let horizontal = 0;
 let depth = 0;
