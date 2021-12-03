@@ -12,3 +12,14 @@ export const getInput = (): boolean[][] =>
       }
     })
   );
+
+export const unbitify = (bits: boolean[]): number => {
+  let n = 0;
+  for (const bit of bits) {
+    n = n << 1;
+    if (bit) {
+      n = n | 1;
+    }
+  }
+  return n;
+};

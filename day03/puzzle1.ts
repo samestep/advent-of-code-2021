@@ -1,15 +1,4 @@
-import { getInput } from "./shared.ts";
-
-const unbitify = (bits: boolean[]): number => {
-  let n = 0;
-  for (const bit of bits) {
-    n = n << 1;
-    if (bit) {
-      n = n | 1;
-    }
-  }
-  return n;
-};
+import { getInput, unbitify } from "./shared.ts";
 
 const input = getInput();
 
