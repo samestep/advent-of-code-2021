@@ -20,3 +20,6 @@ jobs:
       - name: Day 4
         working-directory: day04
         run: ../test.sh
+      - name: Day 5
+        working-directory: day05
+        run: ../test.sh
