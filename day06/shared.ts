@@ -1,12 +1,6 @@
-import { getLines } from "../shared.ts";
+import { getNumbers } from "../shared.ts";
 
-export const getInput = (): number[] => {
-  const lines = getLines();
-  if (lines.length !== 1) {
-    throw new Error("expected exactly one line");
-  }
-  return lines[0].split(",").map((n) => parseInt(n));
-};
+export const getInput = getNumbers;
 
 const step = (before: number[]): number[] => {
   const after = Array(before.length);
