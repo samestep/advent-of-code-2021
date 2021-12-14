@@ -41,3 +41,6 @@ jobs:
       - name: Day 11
         working-directory: day11
         run: ../test.sh
+      - name: Day 12
+        working-directory: day12
+        run: ./test.sh
