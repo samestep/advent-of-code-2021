@@ -1,7 +1,6 @@
-import { getLines } from "../shared.ts";
+import { getGrid } from "../shared.ts";
 
-export const getInput = (): number[][] =>
-  getLines().map((line) => line.split("").map((n) => parseInt(n)));
+export const getInput = getGrid;
 
 export const lowPoints = (heightmap: number[][]): [number, number][] => {
   const points: [number, number][] = [];

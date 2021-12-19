@@ -71,3 +71,6 @@ export class JSONMap<K, V> {
     return Array.from(this.inner.values());
   }
 }
+
+export const getGrid = (): number[][] =>
+  getLines().map((line) => line.split("").map((n) => parseInt(n)));

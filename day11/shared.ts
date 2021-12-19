@@ -1,9 +1,8 @@
-import { getLines } from "../shared.ts";
+import { getGrid } from "../shared.ts";
 
 export type Grid = number[][];
 
-export const getInput = (): Grid =>
-  getLines().map((line) => line.split("").map((c) => parseInt(c)));
+export const getInput = getGrid;
 
 const neighbors = (i: number, j: number): [number, number][] => [
   [i - 1, j - 1],
