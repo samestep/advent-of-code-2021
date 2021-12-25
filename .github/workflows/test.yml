@@ -68,6 +68,9 @@ jobs:
       - name: Day 21
         working-directory: day21
         run: ../test.sh
+      - name: Day 22
+        working-directory: day22
+        run: ./test.sh
   slow:
     runs-on: ubuntu-20.04
     steps:
