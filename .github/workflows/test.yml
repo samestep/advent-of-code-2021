@@ -74,6 +74,9 @@ jobs:
       - name: Day 24
         working-directory: day24
         run: ./test.sh
+      - name: Day 25
+        working-directory: day25
+        run: ./test.sh
   day19:
     runs-on: ubuntu-20.04
     steps:
