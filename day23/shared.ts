@@ -36,17 +36,17 @@ type State = {
 };
 
 const clone = ({ rooms, hall }: State): State => ({
-  rooms: rooms.map((room) => room.map((x) => x)),
-  hall: hall.map((x) => x),
+  rooms: rooms.map((room) => [...room]),
+  hall: [...hall],
 });
 
-export const organize = (
+const penalty = (
   roomSize: number,
-  budget: number,
+  budget: number | null,
   state: State
-): number => {
-  if (budget < 0) {
-    return -1;
+): number | null => {
+  if (budget !== null && budget < 0) {
+    return null;
   }
 
   if (
@@ -55,18 +55,25 @@ export const organize = (
   ) {
     return 0;
   }
-  let best = -1;
 
-  const g = (extra: number, cloned: State) => {
-    const trueBudget = best < 0 ? budget : Math.min(budget, best);
-    if (extra < trueBudget) {
-      const energy = organize(roomSize, trueBudget - extra, cloned);
-      const total = extra + energy;
-      if (energy >= 0 && (best < 0 || total < best)) {
-        best = total;
+  moveIntoRoom: for (let j = 0; j < state.hall.length; ++j) {
+    const pod = state.hall[j];
+    if (pod !== null) {
+      const i = types.indexOf(pod);
+      const room = state.rooms[i];
+      if (room.every((p) => p === pod)) {
+        const location = 2 * (1 + i);
+        for (let k = location; k !== j; k += j < location ? -1 : 1) {
+          if (state.hall[k] !== null) {
+            continue moveIntoRoom;
+          }
+        }
+        state.hall[j] = null;
+        state.rooms[i].push(pod);
+        return penalty(roomSize, budget, state);
       }
     }
-  };
+  }
 
   // move out of room
   for (let i = 0; i < types.length; ++i) {
@@ -78,9 +85,28 @@ export const organize = (
           const cloned = clone(state);
           const pod = cloned.rooms[i].pop()!;
           cloned.hall[j] = pod;
+          const end = 2 * (1 + types.indexOf(pod));
           const extra =
-            (Math.abs(j - location) + 1 + roomSize - room.length) * cost[pod];
-          g(extra, cloned);
+            cost[pod] *
+            2 *
+            Math.max(
+              0,
+              Math.min(location, end) - j,
+              j - Math.max(location, end)
+            );
+          if (budget === null || extra < budget) {
+            const energy = penalty(
+              roomSize,
+              budget === null ? null : budget - extra,
+              cloned
+            );
+            if (energy !== null) {
+              const total = extra + energy;
+              if (budget === null || total < budget) {
+                budget = total;
+              }
+            }
+          }
         }
       };
       for (let j = location; j >= 0 && state.hall[j] === null; --j) {
@@ -96,31 +122,40 @@ export const organize = (
     }
   }
 
-  // move into room
-  for (let j = 0; j < state.hall.length; ++j) {
-    const pod = state.hall[j];
-    if (pod !== null) {
-      const i = types.indexOf(pod);
-      const room = state.rooms[i];
-      if (room.every((p) => p === pod)) {
-        const location = 2 * (1 + i);
-        let clear = true;
-        for (let k = location; k !== j; k += j < location ? -1 : 1) {
-          if (state.hall[k] !== null) {
-            clear = false;
-          }
+  return budget;
+};
+
+const minimum = (rooms: Pod[][]): number => {
+  const move = [0, 0, 0, 0];
+  let min = 0;
+  for (let i = 0; i < rooms.length; ++i) {
+    const room = rooms[i];
+    let dirty = false;
+    for (let j = 0; j < room.length; ++j) {
+      const pod = room[j];
+      const out = room.length - j;
+      if (pod === types[i]) {
+        if (dirty) {
+          // to make our calculations in the search easier, we pretend in the
+          // theoretical minimum that we can move out and then directly back in
+          // without moving one space to the side
+          min += cost[pod] * (out + /* 2 + */ ++move[i]);
         }
-        if (clear) {
-          const cloned = clone(state);
-          cloned.hall[j] = null;
-          cloned.rooms[i].push(pod);
-          const extra =
-            (Math.abs(location - j) + roomSize - room.length) * cost[pod];
-          g(extra, cloned);
-        }
+      } else {
+        dirty = true;
+        const k = types.indexOf(pod);
+        min += cost[pod] * (out + 2 * Math.abs(k - i) + ++move[k]);
       }
     }
   }
+  return min;
+};
 
-  return best;
+export const organize = (rooms: Pod[][]): number | null => {
+  const c1 = minimum(rooms);
+  const c2 = penalty(rooms[0].length, null, {
+    rooms,
+    hall: Array(11).fill(null),
+  });
+  return c2 === null ? null : c1 + c2;
 };
