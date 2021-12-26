@@ -105,19 +105,68 @@ const overlap = (s1: Scanner, s2: Scanner): Oriented | null => {
   return null;
 };
 
+const euclidean = ([x1, y1, z1]: Point, [x2, y2, z2]: Point) =>
+  (x2 - x1) ** 2 + (y2 - y1) ** 2 + (z2 - z1) ** 2;
+
+const intersect = <T>(
+  m1: Map<T, number>,
+  m2: Map<T, number>
+): Map<T, number> => {
+  const m = new Map<T, number>();
+  for (const [k, n1] of m1.entries()) {
+    const n2 = m2.get(k);
+    if (n2 !== undefined) {
+      m.set(k, Math.min(n1, n2));
+    }
+  }
+  return m;
+};
+
 export const orientAll = (scanners: Scanner[]): Map<number, Oriented> => {
+  const distances = scanners.map((scanner) => {
+    const m = new Map<number, number>();
+    for (let i = 0; i < scanner.length; ++i) {
+      for (let j = i + 1; j < scanner.length; ++j) {
+        const d = euclidean(scanner[i], scanner[j]);
+        const n = m.get(d);
+        m.set(d, n === undefined ? 1 : n + 1);
+      }
+    }
+    return m;
+  });
+  const candidates = new Map<number, number[]>();
+  for (let i = 0; i < scanners.length; ++i) {
+    for (let j = 0; j < scanners.length; ++j) {
+      if (i !== j) {
+        const m = intersect(distances[i], distances[j]);
+        const n = [...m.values()].reduce((a, b) => a + b, 0);
+        if (n >= 66) {
+          const a = candidates.get(i);
+          if (a === undefined) {
+            candidates.set(i, [j]);
+          } else {
+            a.push(j);
+          }
+        }
+      }
+    }
+  }
+
   const oriented = new Map<number, Oriented>([
     [0, { translation: [0, 0, 0], beacons: scanners[0] }],
   ]);
   const todo = [0];
   while (todo.length > 0) {
     const i = todo.pop()!;
-    for (let j = 0; j < scanners.length; ++j) {
-      if (!oriented.has(j)) {
-        const ol = overlap(oriented.get(i)!.beacons, scanners[j]);
-        if (ol !== null) {
-          oriented.set(j, ol);
-          todo.push(j);
+    const js = candidates.get(i);
+    if (js !== undefined) {
+      for (const j of js) {
+        if (!oriented.has(j)) {
+          const ol = overlap(oriented.get(i)!.beacons, scanners[j]);
+          if (ol !== null) {
+            oriented.set(j, ol);
+            todo.push(j);
+          }
         }
       }
     }

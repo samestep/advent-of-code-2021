@@ -62,6 +62,9 @@ jobs:
       - name: Day 18
         working-directory: day18
         run: ../test.sh
+      - name: Day 19
+        working-directory: day19
+        run: ../test.sh
       - name: Day 20
         working-directory: day20
         run: ../test.sh
@@ -84,9 +87,6 @@ jobs:
       - uses: denoland/setup-deno@v1
         with:
           deno-version: "1.16.3"
-      - name: Day 19
-        working-directory: day19
-        run: ../test.sh
   day23:
     runs-on: ubuntu-20.04
     steps:
